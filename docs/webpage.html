@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam Infos</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .actionButton {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .title {
+            color: red; /* Rote Schriftfarbe */
+            font-size: 72px; /* Größere Schriftgröße */
+            margin-bottom: 20px; /* Abstand nach unten */
+            text-align: center; /* Zentrierte Ausrichtung */
+            font-family: 'Arial', sans-serif; /* Schriftart */
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="title">Steam Infos</h1> <!-- Rote Überschrift -->
+    <button class="actionButton" onclick="window.location.href='steamId.html'">Owned Games</button>
+    <button class="actionButton" onclick="window.location.href='gamenews.html'">Game News</button> <!-- bleibt unverändert -->
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game News</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Oben ausrichten */
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .title {
+            color: red; /* Rote Schriftfarbe */
+            font-size: 72px; /* Schriftgröße */
+            margin-top: 50px; /* Abstand nach oben */
+            margin-bottom: 20px; /* Abstand nach unten */
+            text-align: center; /* Zentrierte Ausrichtung */
+        }
+        input {
+            padding: 10px;
+            margin-top: 20px; /* Abstand nach oben */
+            margin-bottom: 10px; /* Abstand nach unten */
+            font-size: 18px; /* Schriftgröße für Eingabefeld */
+            border: 2px solid red; /* Rote Umrandung */
+            background-color: black; /* Hintergrundfarbe */
+            color: white; /* Schriftfarbe */
+        }
+        button {
+            padding: 10px;
+            background-color: red; /* Hintergrundfarbe */
+            color: white; /* Schriftfarbe */
+            border: none;
+            cursor: pointer;
+            font-size: 18px; /* Schriftgröße für Button */
+        }
+        button:hover {
+            background-color: darkred; /* Farbänderung bei Hover */
+        }
+        .news-list {
+            text-align: center; /* Zentrierte Ausrichtung der Nachrichten */
+            margin-top: 20px; /* Abstand nach oben */
+        }
+        .news-item {
+            font-size: 24px; /* Schriftgröße */
+            margin: 10px 0; /* Abstand zwischen den Nachrichten */
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="title">Game News</h1> <!-- Überschrift für Game News -->
+    <input type="text" id="gameId" placeholder="Gib die Spiel-ID ein" />
+    <button onclick="fetchGameNews()">Nachrichten abrufen</button>
+    
+    <div class="news-list" id="newsList"></div> <!-- Platz für die Nachrichtenliste -->
+
+    <script>
+        // Funktion zum Abrufen der Spielnachrichten
+        function fetchGameNews() {
+            const gameId = document.getElementById('gameId').value;
+            axios.get(`http://localhost:8080/api/games/gamenews?appId=${gameId}`)
+                .then(response => {
+                    console.log(response)
+                    const newsList = document.getElementById('newsList');
+                    newsList.innerHTML = ''; // Vorherige Nachrichten löschen
+                    if (response.data && response.data.appnews && response.data.appnews.newsitems) {
+                        response.data.appnews.newsitems.forEach(newsItem => {
+                            const newsDiv = document.createElement('div');
+                            newsDiv.className = 'news-item';
+                            newsDiv.innerHTML = `<strong>${newsItem.title}</strong><p>${newsItem.contents}</p><em>${new Date(newsItem.date * 1000).toLocaleDateString()}</em>`;
+                            newsList.appendChild(newsDiv);
+                        });
+                    } else {
+                        newsList.innerHTML = '<p>Keine Nachrichten gefunden.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler beim Laden der Nachrichten:', error);
+                    document.getElementById('newsList').textContent = 'Fehler beim Laden der Nachrichten: ' + error.message;
+                });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiele anzeigen - Steam Infos</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            background-color: black; /* Schwarzer Hintergrund */
+            color: white; /* Weißer Text */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100vh; /* Volle Höhe des Viewports */
+            margin: 0; /* Kein Margin */
+        }
+        .title {
+            color: red; /* Rote Überschrift */
+            font-size: 72px; /* Schriftgröße der Überschrift */
+            margin-top: 50px; /* Abstand nach oben */
+            margin-bottom: 20px; /* Abstand nach unten */
+            text-align: center; /* Zentriert die Überschrift */
+        }
+        .game-item {
+            font-size: 24px; /* Schriftgröße für Spielinformationen */
+            text-align: center; /* Zentriert den Text */
+        }
+        .game-item p {
+            margin: 0; /* Setze Margin auf 0, um den Abstand zwischen den Zeilen zu entfernen */
+        }
+        .spacer {
+            height: 20px; /* Höhe der Leerzeile */
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="title">Besitzene Spiele</h1>
+    <div id="gameList">Lade Spiele...</div> <!-- Initialer Ladezustand -->
+
+    <script>
+        function getSteamIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('steamId'); // Holt die steamId aus der URL
+        }
+
+        function fetchOwnedGames(steamId) {
+            const apiUrl = `http://localhost:8080/api/games/ownedgames?steamId=${steamId}`; // API-URL mit steamId
+            
+            axios.get(apiUrl)
+                .then(response => {
+                    const gameList = document.getElementById('gameList');
+                    gameList.innerHTML = ''; // Vorherige Inhalte entfernen
+
+                    if (response.data && response.data.length > 0) {
+                        response.data.forEach(game => {
+                            const gameItem = document.createElement('div');
+                            gameItem.className = 'game-item';
+
+                            // Erstelle die Paragraphen ohne Abstand
+                            const p1 = document.createElement('p');
+                            p1.textContent = game.name; // Spielname
+
+                            const p2 = document.createElement('p');
+                            p2.textContent = `ID: ${game.appid}`; // Spiel ID
+
+                            const p3 = document.createElement('p');
+                            p3.textContent = `Spielzeit: ${game.playtime_forever}`; // Spielzeit
+
+                            // Füge die Paragraphen zum Div hinzu
+                            gameItem.appendChild(p1);
+                            gameItem.appendChild(p2);
+                            gameItem.appendChild(p3);
+
+                            // Füge einen leeren Div für den Abstand zwischen den Spielen hinzu
+                            const spacer = document.createElement('div');
+                            spacer.className = 'spacer';
+                            gameItem.appendChild(spacer);
+
+                            gameList.appendChild(gameItem); // Füge das Spielitem zur Spielliste hinzu
+                        });
+                    } else {
+                        gameList.textContent = 'Keine Spiele gefunden.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler beim Laden der Spiele:', error);
+                    document.getElementById('gameList').textContent = 'Fehler beim Laden der Spiele: ' + error.message;
+                });
+        }
+
+        window.onload = function() {
+            const steamId = getSteamIdFromURL(); // Holt die Steam-ID von der URL
+            if (steamId) {
+                fetchOwnedGames(steamId); // Ruft die Spiele für die angegebene Steam-ID ab
+            } else {
+                document.getElementById('gameList').textContent = 'Keine Steam ID angegeben.'; // Fehlernachricht
+            }
+        };
+    </script>
+
+</body>
+</html>
